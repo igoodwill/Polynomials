@@ -1,6 +1,6 @@
 package ua.igoodwill.polynomials.model;
 
-import ua.igoodwill.polynomials.util.locale.MessageUtil;
+import ua.igoodwill.polynomials.service.locale.MessageService;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -37,27 +37,25 @@ public class Polynomial {
         df.setMaximumFractionDigits(4);
     }
 
-    private final MessageUtil messageUtil;
-
     private final double[] coefficients;
 
-    public Polynomial(MessageUtil messageUtil, double[] coefficients) {
-        this.messageUtil = messageUtil;
+    public Polynomial(double[] coefficients) {
         if (coefficients == null ||
                 coefficients.length == 0 ||
                 (coefficients.length > 1 && coefficients[coefficients.length - 1] == 0)) {
-            throw new IllegalArgumentException(messageUtil.wrongParam("coefficients"));
+            throw new IllegalArgumentException(
+                    MessageService.getUtil().wrongParam("coefficients")
+            );
         }
 
         this.coefficients = coefficients;
     }
 
-    public Polynomial(MessageUtil messageUtil, Polynomial source) {
-        this.messageUtil = messageUtil;
+    public Polynomial(Polynomial source) {
         coefficients = Arrays.copyOf(source.coefficients, source.coefficients.length);
     }
 
-    public static Polynomial from(MessageUtil messageUtil, String polynomial) {
+    public static Polynomial from(String polynomial) {
         Matcher termMatcher = Pattern
                 .compile(TERM_PATTERN)
                 .matcher(polynomial);
@@ -85,7 +83,9 @@ public class Polynomial {
                         .matcher(monomial);
 
                 if (!monomialMatcher.matches()) {
-                    throw new IllegalArgumentException(messageUtil.wrongParam("polynomial"));
+                    throw new IllegalArgumentException(
+                            MessageService.getUtil().wrongParam("polynomial")
+                    );
                 }
 
                 String coefficientString = monomialMatcher.group(1);
@@ -112,7 +112,6 @@ public class Polynomial {
         }
 
         return new Polynomial(
-                messageUtil,
                 coefficients
                         .stream()
                         .mapToDouble(Double::doubleValue)
@@ -120,8 +119,8 @@ public class Polynomial {
         );
     }
 
-    public static Polynomial zero(MessageUtil messageUtil) {
-        return new Polynomial(messageUtil, new double[]{0});
+    public static Polynomial zero() {
+        return new Polynomial(new double[]{0});
     }
 
     @Override

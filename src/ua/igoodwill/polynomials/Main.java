@@ -12,7 +12,7 @@ import ua.igoodwill.polynomials.io.basic.ConsoleWriter;
 import ua.igoodwill.polynomials.io.polynomials.PolynomialsReader;
 import ua.igoodwill.polynomials.io.polynomials.PolynomialsReaderImpl;
 import ua.igoodwill.polynomials.model.Polynomial;
-import ua.igoodwill.polynomials.util.locale.MessageUtil;
+import ua.igoodwill.polynomials.service.locale.MessageService;
 import ua.igoodwill.polynomials.util.locale.MessageUtilImpl;
 
 import java.io.IOException;
@@ -22,16 +22,16 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BasicWriter cw = new ConsoleWriter();
         BasicReader cr = new ConsoleReader();
-        MessageUtil messageUtil = MessageUtilImpl.getInstance();
-        PolynomialsReader pr = new PolynomialsReaderImpl(cr, messageUtil);
+        MessageService.setUtil(MessageUtilImpl.getInstance());
+        PolynomialsReader pr = new PolynomialsReaderImpl(cr);
 
         cw.write("F: ");
         Polynomial f = pr.readPolynomial();
         cw.write("G: ");
         Polynomial g = pr.readPolynomial();
 
-        BasicOperations bo = new BasicOperationsImpl(messageUtil);
-        Division division = new DivisionImpl(messageUtil, bo);
+        BasicOperations bo = new BasicOperationsImpl();
+        Division division = new DivisionImpl(bo);
 
         DivisionResult divisionResult = division.divide(f, g);
         cw.writeLine(divisionResult.toString());
