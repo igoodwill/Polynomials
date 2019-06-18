@@ -26,8 +26,8 @@ public class SPolynomialImpl implements SPolynomial {
 
         Monomial lcm = monomialLcm.lcm(leadingMonomial1, leadingMonomial2);
 
-        Polynomial quotient1 = division.divide(lcm, leadingMonomial1).getQuotient();
-        Polynomial quotient2 = division.divide(lcm, leadingMonomial2).getQuotient();
+        Polynomial quotient1 = division.divide(lcm, leadingMonomial1).getQuotients()[0];
+        Polynomial quotient2 = division.divide(lcm, leadingMonomial2).getQuotients()[0];
 
         return basicOperations.subtract(
                 basicOperations.multiply(p1, quotient1),

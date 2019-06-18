@@ -2,18 +2,21 @@ package ua.igoodwill.polynomials.algo.division;
 
 import ua.igoodwill.polynomials.model.Polynomial;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class DivisionResult {
 
-    private final Polynomial quotient;
+    private final Polynomial[] quotients;
     private final Polynomial remainder;
 
-    public DivisionResult(Polynomial quotient, Polynomial remainder) {
-        this.quotient = quotient;
+    public DivisionResult(Polynomial[] quotients, Polynomial remainder) {
+        this.quotients = quotients;
         this.remainder = remainder;
     }
 
-    public Polynomial getQuotient() {
-        return quotient;
+    public Polynomial[] getQuotients() {
+        return quotients;
     }
 
     public Polynomial getRemainder() {
@@ -22,6 +25,11 @@ public class DivisionResult {
 
     @Override
     public String toString() {
-        return "Q: " + quotient + "\nR: " + remainder;
+        return "Quotients:\n" +
+                Arrays
+                        .stream(quotients)
+                        .map(Polynomial::toString)
+                        .collect(Collectors.joining("\n"))
+                + "\nR: " + remainder;
     }
 }

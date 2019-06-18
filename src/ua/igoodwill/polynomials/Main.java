@@ -15,6 +15,8 @@ import ua.igoodwill.polynomials.io.basic.ConsoleReader;
 import ua.igoodwill.polynomials.io.basic.ConsoleWriter;
 import ua.igoodwill.polynomials.io.polynomials.PolynomialsReader;
 import ua.igoodwill.polynomials.io.polynomials.PolynomialsReaderImpl;
+import ua.igoodwill.polynomials.io.polynomials.generators.GeneratorsReader;
+import ua.igoodwill.polynomials.io.polynomials.generators.GeneratorsReaderImpl;
 import ua.igoodwill.polynomials.io.polynomials.order.OrderReader;
 import ua.igoodwill.polynomials.io.polynomials.order.OrderReaderImpl;
 import ua.igoodwill.polynomials.model.Polynomial;
@@ -34,6 +36,7 @@ public class Main {
     private BasicReader basicReader;
 
     private PolynomialsReader polynomialsReader;
+    private GeneratorsReader generatorsReader;
     private OrderReader orderReader;
 
     private BasicOperations basicOperations;
@@ -51,14 +54,11 @@ public class Main {
 
         instance.basicWriter.write("F: ");
         Polynomial f = instance.polynomialsReader.readPolynomial();
-        instance.basicWriter.write("G: ");
-        Polynomial g = instance.polynomialsReader.readPolynomial();
+        instance.basicWriter.writeLine("Generators (enter zero to divide): ");
+        Polynomial[] generators = instance.generatorsReader.readGenerators();
 
-//        DivisionResult divisionResult = instance.division.divide(f, g);
-//        instance.basicWriter.writeLine(divisionResult.toString());
-
-        Polynomial result = instance.sPolynomial.sPolynomial(f, g);
-        instance.basicWriter.writeLine(result.toString());
+        DivisionResult divisionResult = instance.division.divide(f, generators);
+        instance.basicWriter.writeLine(divisionResult.toString());
     }
 
     private void init() {
@@ -75,6 +75,7 @@ public class Main {
         basicReader = new ConsoleReader();
 
         polynomialsReader = new PolynomialsReaderImpl(basicReader);
+        generatorsReader = new GeneratorsReaderImpl(polynomialsReader);
         orderReader = new OrderReaderImpl(basicReader);
 
         basicOperations = new BasicOperationsImpl();
