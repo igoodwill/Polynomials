@@ -5,6 +5,10 @@ import ua.igoodwill.polynomials.algo.basic.BasicOperationsImpl;
 import ua.igoodwill.polynomials.algo.division.Division;
 import ua.igoodwill.polynomials.algo.division.DivisionImpl;
 import ua.igoodwill.polynomials.algo.division.DivisionResult;
+import ua.igoodwill.polynomials.algo.monomial.lcm.MonomialLcm;
+import ua.igoodwill.polynomials.algo.monomial.lcm.MonomialLcmImpl;
+import ua.igoodwill.polynomials.algo.s_polynomial.SPolynomial;
+import ua.igoodwill.polynomials.algo.s_polynomial.SPolynomialImpl;
 import ua.igoodwill.polynomials.io.basic.BasicReader;
 import ua.igoodwill.polynomials.io.basic.BasicWriter;
 import ua.igoodwill.polynomials.io.basic.ConsoleReader;
@@ -34,6 +38,8 @@ public class Main {
 
     private BasicOperations basicOperations;
     private Division division;
+    private MonomialLcm monomialLcm;
+    private SPolynomial sPolynomial;
 
     public static void main(String[] args) throws IOException {
         Main instance = new Main();
@@ -48,8 +54,11 @@ public class Main {
         instance.basicWriter.write("G: ");
         Polynomial g = instance.polynomialsReader.readPolynomial();
 
-        DivisionResult divisionResult = instance.division.divide(f, g);
-        instance.basicWriter.writeLine(divisionResult.toString());
+//        DivisionResult divisionResult = instance.division.divide(f, g);
+//        instance.basicWriter.writeLine(divisionResult.toString());
+
+        Polynomial result = instance.sPolynomial.sPolynomial(f, g);
+        instance.basicWriter.writeLine(result.toString());
     }
 
     private void init() {
@@ -70,5 +79,7 @@ public class Main {
 
         basicOperations = new BasicOperationsImpl();
         division = new DivisionImpl(basicOperations);
+        monomialLcm = new MonomialLcmImpl();
+        sPolynomial = new SPolynomialImpl(basicOperations, division, monomialLcm);
     }
 }
