@@ -36,29 +36,15 @@ public class BasicOperationsImpl implements BasicOperations {
 
     @Override
     public Polynomial subtract(HasMonomials minuend, HasMonomials subtrahend) {
-        Monomial[] minuendMonomials = minuend.getMonomials();
-        Monomial[] subtrahendMonomials = subtrahend.getMonomials();
+        return add(minuend, new Polynomial(Arrays
+                .stream(subtrahend.getMonomials())
+                .map(monomial -> {
+                    double coefficient = monomial.getCoefficient();
+                    int[] degrees = monomial.getDegrees();
 
-        TreeMap<Monomial, Monomial> result = new TreeMap<>();
-        Arrays
-                .stream(minuendMonomials)
-                .forEach(monomial -> result.put(monomial, monomial));
-
-        Arrays
-                .stream(subtrahendMonomials)
-                .forEach(monomial -> {
-                    Monomial currentMonomial = result.get(monomial);
-                    if (currentMonomial != null) {
-                        int[] degrees = monomial.getDegrees();
-                        double coefficient = monomial.getCoefficient();
-                        double currentCoefficient = currentMonomial.getCoefficient();
-                        monomial = new Monomial(currentCoefficient - coefficient, degrees);
-                    }
-
-                    result.put(monomial, monomial);
-                });
-
-        return new Polynomial(result);
+                    return new Monomial(-coefficient, degrees);
+                })
+                .toArray(Monomial[]::new)));
     }
 
     @Override

@@ -3,9 +3,7 @@ package ua.igoodwill.polynomials.model;
 import ua.igoodwill.polynomials.service.locale.MessageService;
 import ua.igoodwill.polynomials.service.locale.NotationService;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +14,18 @@ public class Polynomial implements HasMonomials {
     private final TreeMap<Monomial, Monomial> monomials;
 
     public Polynomial(TreeMap<Monomial, Monomial> monomials) {
+        this(
+                Optional
+                        .of(monomials)
+                        .map(Map::values)
+                        .map(values -> values.toArray(new Monomial[0]))
+                        .orElseThrow(
+                                () -> new IllegalArgumentException(MessageService.getUtil().wrongParam("monomials"))
+                        )
+        );
+    }
+
+    public Polynomial(Monomial[] monomials) {
         if (monomials == null) {
             throw new IllegalArgumentException(
                     MessageService.getUtil().wrongParam("monomials")
@@ -23,9 +33,8 @@ public class Polynomial implements HasMonomials {
         }
 
         this.monomials = new TreeMap<>();
-        monomials
-                .values()
-                .stream()
+        Arrays
+                .stream(monomials)
                 .filter(monomial -> !monomial.isZero())
                 .forEach(monomial -> this.monomials.put(monomial, monomial));
 
