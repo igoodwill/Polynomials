@@ -129,6 +129,10 @@ public class Monomial implements HasMonomials, Comparable<Monomial> {
         return getTotalDegree() == 0;
     }
 
+    public int getDegree(int index) {
+        return degrees[index];
+    }
+
     public int[] getDegrees() {
         return degrees;
     }
