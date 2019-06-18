@@ -13,27 +13,47 @@ import ua.igoodwill.polynomials.io.polynomials.PolynomialsReader;
 import ua.igoodwill.polynomials.io.polynomials.PolynomialsReaderImpl;
 import ua.igoodwill.polynomials.model.Polynomial;
 import ua.igoodwill.polynomials.service.locale.MessageService;
+import ua.igoodwill.polynomials.service.locale.NotationService;
 import ua.igoodwill.polynomials.util.locale.MessageUtilImpl;
 
 import java.io.IOException;
 
 public class Main {
 
+    private BasicWriter basicWriter;
+    private BasicReader basicReader;
+
+    private PolynomialsReader polynomialsReader;
+
+    private BasicOperations basicOperations;
+    private Division division;
+
     public static void main(String[] args) throws IOException {
-        BasicWriter cw = new ConsoleWriter();
-        BasicReader cr = new ConsoleReader();
+        Main instance = new Main();
+        instance.init();
+
+        instance.basicWriter.write("F: ");
+        Polynomial f = instance.polynomialsReader.readPolynomial();
+        instance.basicWriter.write("G: ");
+        Polynomial g = instance.polynomialsReader.readPolynomial();
+
+        DivisionResult divisionResult = instance.division.divide(f, g);
+        instance.basicWriter.writeLine(divisionResult.toString());
+    }
+
+    private void init() {
         MessageService.setUtil(MessageUtilImpl.getInstance());
-        PolynomialsReader pr = new PolynomialsReaderImpl(cr);
+        NotationService.setVariableLetter("x");
+        NotationService.setPowerSymbol("^");
+        NotationService.setPositiveSign("+");
+        NotationService.setNegativeSign("-");
 
-        cw.write("F: ");
-        Polynomial f = pr.readPolynomial();
-        cw.write("G: ");
-        Polynomial g = pr.readPolynomial();
+        basicWriter = new ConsoleWriter();
+        basicReader = new ConsoleReader();
 
-        BasicOperations bo = new BasicOperationsImpl();
-        Division division = new DivisionImpl(bo);
+        polynomialsReader = new PolynomialsReaderImpl(basicReader);
 
-        DivisionResult divisionResult = division.divide(f, g);
-        cw.writeLine(divisionResult.toString());
+        basicOperations = new BasicOperationsImpl();
+        division = new DivisionImpl(basicOperations);
     }
 }

@@ -1,6 +1,7 @@
 package ua.igoodwill.polynomials.model;
 
 import ua.igoodwill.polynomials.service.locale.MessageService;
+import ua.igoodwill.polynomials.service.locale.NotationService;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -17,18 +18,8 @@ import static ua.igoodwill.polynomials.util.regex.RegexUtil.wrapWithAnchors;
 
 public class Polynomial {
 
-    private static final String VARIABLE_LETTER = "x";
-    private static final String POWER_SYMBOL = "^";
-    private static final String POSITIVE_SIGN = "+";
-    private static final String POSITIVE_SEPARATOR = " + ";
-    private static final String NEGATIVE_SIGN = "-";
-    private static final String NEGATIVE_SEPARATOR = " - ";
     private static final String TERM_PATTERN = "([+-]?[^-+]+)";
     private static final String CONSTANT_PATTERN = "?\\d+(?:\\.\\d+)?";
-    private static final String MONOMIAL_PATTERN =
-            "(\\d+(?:.\\d+)?)?" + // Coefficient
-                    VARIABLE_LETTER + // Variable
-                    "(?:" + Pattern.quote(POWER_SYMBOL) + "(\\d+))?"; // Degree
 
     private static final DecimalFormat df;
 
@@ -56,6 +47,12 @@ public class Polynomial {
     }
 
     public static Polynomial from(String polynomial) {
+        final String monomialPattern = wrapWithAnchors(
+                "(\\d+(?:.\\d+)?)?" + // Coefficient
+                        Pattern.quote(NotationService.getVariableLetter()) + // Variable
+                        "(?:" + Pattern.quote(NotationService.getPowerSymbol()) + "(\\d+))?"
+        ); // Degree;
+
         Matcher termMatcher = Pattern
                 .compile(TERM_PATTERN)
                 .matcher(polynomial);
@@ -66,9 +63,9 @@ public class Polynomial {
             monomial = monomial.replaceAll("\\s", "");
 
             double coefficient = 1;
-            if (monomial.startsWith(POSITIVE_SIGN)) {
+            if (monomial.startsWith(NotationService.getPositiveSign())) {
                 monomial = monomial.substring(1);
-            } else if (monomial.startsWith(NEGATIVE_SIGN)) {
+            } else if (monomial.startsWith(NotationService.getNegativeSign())) {
                 monomial = monomial.substring(1);
                 coefficient = -1;
             }
@@ -79,7 +76,7 @@ public class Polynomial {
                 degree = 0;
             } else {
                 Matcher monomialMatcher = Pattern
-                        .compile(wrapWithAnchors(MONOMIAL_PATTERN))
+                        .compile(monomialPattern)
                         .matcher(monomial);
 
                 if (!monomialMatcher.matches()) {
@@ -157,12 +154,14 @@ public class Polynomial {
                 .map(this::getMonomial)
                 .forEach(monomial -> {
                     if (result.length() != 0) {
-                        if (monomial.startsWith(NEGATIVE_SIGN)) {
-                            result.append(NEGATIVE_SEPARATOR);
+                        result.append(" ");
+                        if (monomial.startsWith(NotationService.getNegativeSign())) {
+                            result.append(NotationService.getNegativeSign());
                             monomial = monomial.substring(1);
                         } else {
-                            result.append(POSITIVE_SEPARATOR);
+                            result.append(NotationService.getPositiveSign());
                         }
+                        result.append(" ");
                     }
 
                     result.append(monomial);
@@ -183,14 +182,14 @@ public class Polynomial {
             result.append(df.format(coefficient));
         } else {
             if (coefficient == -1) {
-                result.append(NEGATIVE_SIGN);
+                result.append(NotationService.getNegativeSign());
             }
         }
 
-        result.append(VARIABLE_LETTER);
+        result.append(NotationService.getVariableLetter());
 
         if (index != 1) {
-            result.append(POWER_SYMBOL).append(index);
+            result.append(NotationService.getPowerSymbol()).append(index);
         }
 
         return result.toString();
