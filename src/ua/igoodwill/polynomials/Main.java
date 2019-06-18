@@ -11,12 +11,18 @@ import ua.igoodwill.polynomials.io.basic.ConsoleReader;
 import ua.igoodwill.polynomials.io.basic.ConsoleWriter;
 import ua.igoodwill.polynomials.io.polynomials.PolynomialsReader;
 import ua.igoodwill.polynomials.io.polynomials.PolynomialsReaderImpl;
+import ua.igoodwill.polynomials.io.polynomials.order.OrderReader;
+import ua.igoodwill.polynomials.io.polynomials.order.OrderReaderImpl;
 import ua.igoodwill.polynomials.model.Polynomial;
+import ua.igoodwill.polynomials.service.locale.FormatService;
 import ua.igoodwill.polynomials.service.locale.MessageService;
 import ua.igoodwill.polynomials.service.locale.NotationService;
 import ua.igoodwill.polynomials.util.locale.MessageUtilImpl;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class Main {
 
@@ -24,6 +30,7 @@ public class Main {
     private BasicReader basicReader;
 
     private PolynomialsReader polynomialsReader;
+    private OrderReader orderReader;
 
     private BasicOperations basicOperations;
     private Division division;
@@ -31,6 +38,10 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Main instance = new Main();
         instance.init();
+
+        instance.basicWriter.write("Order (\"x y z\" means x > y > z order): ");
+        String[] order = instance.orderReader.readOrder();
+        NotationService.setVariableLetters(order);
 
         instance.basicWriter.write("F: ");
         Polynomial f = instance.polynomialsReader.readPolynomial();
@@ -43,15 +54,19 @@ public class Main {
 
     private void init() {
         MessageService.setUtil(MessageUtilImpl.getInstance());
-        NotationService.setVariableLetter("x");
         NotationService.setPowerSymbol("^");
         NotationService.setPositiveSign("+");
         NotationService.setNegativeSign("-");
+
+        DecimalFormat decimalFormat = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        decimalFormat.setMaximumFractionDigits(4);
+        FormatService.setDecimalFormat(decimalFormat);
 
         basicWriter = new ConsoleWriter();
         basicReader = new ConsoleReader();
 
         polynomialsReader = new PolynomialsReaderImpl(basicReader);
+        orderReader = new OrderReaderImpl(basicReader);
 
         basicOperations = new BasicOperationsImpl();
         division = new DivisionImpl(basicOperations);

@@ -1,8 +1,8 @@
 package ua.igoodwill.polynomials.algo.division;
 
-import ua.igoodwill.polynomials.model.Polynomial;
+import ua.igoodwill.polynomials.model.HasMonomials;
 
 public interface Division {
 
-    DivisionResult divide(Polynomial dividend, Polynomial divisor);
+    DivisionResult divide(HasMonomials dividend, HasMonomials divisor);
 }

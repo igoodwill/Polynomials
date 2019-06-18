@@ -1,10 +1,15 @@
 package ua.igoodwill.polynomials.service.locale;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.IntStream;
+
 public class NotationService {
 
     private static NotationService instance = new NotationService();
 
-    private String variableLetter;
+    private String[] variableLetters; // [x, y] means x > y order
+    private Map<String, Integer> variableLetterToIndex;
     private String powerSymbol;
     private String positiveSign;
     private String negativeSign;
@@ -16,12 +21,31 @@ public class NotationService {
     private NotationService() {
     }
 
-    public static String getVariableLetter() {
-        return getInstance().variableLetter;
+    public static String[] getVariableLetters() {
+        return getInstance().variableLetters;
     }
 
-    public static void setVariableLetter(String variableLetter) {
-        getInstance().variableLetter = variableLetter;
+    public static String getVariableLetter(int index) {
+        return getInstance().variableLetters[index];
+    }
+
+    public static int getVariableIndex(String letter) {
+        return getInstance().variableLetterToIndex.get(letter);
+    }
+
+    public static int getNumberOfVariables() {
+        return getInstance().variableLetters.length;
+    }
+
+    public static void setVariableLetters(String... variableLetters) {
+        NotationService instance = getInstance();
+
+        instance.variableLetters = variableLetters;
+        instance.variableLetterToIndex = new HashMap<>();
+
+        IntStream
+                .range(0, variableLetters.length)
+                .forEach(index -> instance.variableLetterToIndex.put(variableLetters[index], index));
     }
 
     public static String getPowerSymbol() {

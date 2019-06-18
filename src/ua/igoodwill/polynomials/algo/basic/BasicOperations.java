@@ -1,12 +1,13 @@
 package ua.igoodwill.polynomials.algo.basic;
 
+import ua.igoodwill.polynomials.model.HasMonomials;
 import ua.igoodwill.polynomials.model.Polynomial;
 
 public interface BasicOperations {
 
-    Polynomial add(Polynomial p1, Polynomial p2);
+    Polynomial add(HasMonomials p1, HasMonomials p2);
 
-    Polynomial subtract(Polynomial minuend, Polynomial subtrahend);
+    Polynomial subtract(HasMonomials minuend, HasMonomials subtrahend);
 
-    Polynomial multiply(Polynomial p1, Polynomial p2);
+    Polynomial multiply(HasMonomials p1, HasMonomials p2);
 }

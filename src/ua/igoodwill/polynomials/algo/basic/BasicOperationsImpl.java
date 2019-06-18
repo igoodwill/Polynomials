@@ -1,70 +1,103 @@
 package ua.igoodwill.polynomials.algo.basic;
 
+import ua.igoodwill.polynomials.model.HasMonomials;
+import ua.igoodwill.polynomials.model.Monomial;
 import ua.igoodwill.polynomials.model.Polynomial;
 
+import java.util.Arrays;
+import java.util.TreeMap;
 import java.util.stream.IntStream;
 
 public class BasicOperationsImpl implements BasicOperations {
 
     @Override
-    public Polynomial add(Polynomial p1, Polynomial p2) {
-        return new Polynomial(
-                IntStream
-                        .range(0, getDegreeForSum(p1, p2) + 1)
-                        .mapToDouble(i -> addCoefficients(p1, p2, i))
-                        .toArray()
-        );
+    public Polynomial add(HasMonomials p1, HasMonomials p2) {
+        Monomial[] monomials = p1.getMonomials();
+        Monomial[] monomials2 = p2.getMonomials();
+
+        TreeMap<Monomial, Monomial> result = new TreeMap<>();
+        Arrays
+                .stream(new Monomial[][]{monomials, monomials2})
+                .flatMap(Arrays::stream)
+                .forEach(monomial -> {
+                    Monomial currentMonomial = result.get(monomial);
+                    if (currentMonomial != null) {
+                        int[] degrees = monomial.getDegrees();
+                        double coefficient = monomial.getCoefficient();
+                        double currentCoefficient = currentMonomial.getCoefficient();
+                        monomial = new Monomial(currentCoefficient + coefficient, degrees);
+                    }
+
+                    result.put(monomial, monomial);
+                });
+
+        return new Polynomial(result);
     }
 
     @Override
-    public Polynomial subtract(Polynomial minuend, Polynomial subtrahend) {
-        return add(minuend, new Polynomial(
-                IntStream
-                        .range(0, subtrahend.getDegree() + 1)
-                        .mapToDouble(subtrahend::getCoefficient)
-                        .map(coefficient -> -coefficient)
-                        .toArray()
-        ));
+    public Polynomial subtract(HasMonomials minuend, HasMonomials subtrahend) {
+        Monomial[] minuendMonomials = minuend.getMonomials();
+        Monomial[] subtrahendMonomials = subtrahend.getMonomials();
+
+        TreeMap<Monomial, Monomial> result = new TreeMap<>();
+        Arrays
+                .stream(minuendMonomials)
+                .forEach(monomial -> result.put(monomial, monomial));
+
+        Arrays
+                .stream(subtrahendMonomials)
+                .forEach(monomial -> {
+                    Monomial currentMonomial = result.get(monomial);
+                    if (currentMonomial != null) {
+                        int[] degrees = monomial.getDegrees();
+                        double coefficient = monomial.getCoefficient();
+                        double currentCoefficient = currentMonomial.getCoefficient();
+                        monomial = new Monomial(currentCoefficient - coefficient, degrees);
+                    }
+
+                    result.put(monomial, monomial);
+                });
+
+        return new Polynomial(result);
     }
 
     @Override
-    public Polynomial multiply(Polynomial p1, Polynomial p2) {
-        int degree1 = p1.getDegree();
-        int degree2 = p2.getDegree();
+    public Polynomial multiply(HasMonomials p1, HasMonomials p2) {
+        Monomial[] monomials = p1.getMonomials();
+        Monomial[] monomials2 = p2.getMonomials();
 
-        return new Polynomial(
-                IntStream
-                        .range(0, degree1 + degree2 + 1)
-                        .mapToDouble(
-                                i -> IntStream
-                                        .range(0, i + 1)
-                                        .mapToDouble(
-                                                j -> p1.getCoefficient(j) * p2.getCoefficient(i - j)
-                                        )
-                                        .sum()
-                        )
-                        .toArray()
-        );
-    }
+        TreeMap<Monomial, Monomial> result = new TreeMap<>();
+        Arrays
+                .stream(monomials)
+                .forEach(monomial -> {
+                    Arrays
+                            .stream(monomials2)
+                            .forEach(monomial2 -> {
+                                int[] degrees = monomial.getDegrees();
+                                int[] degrees2 = monomial2.getDegrees();
 
-    private int getDegreeForSum(Polynomial p1, Polynomial p2) {
-        int degree1 = p1.getDegree();
-        int degree2 = p2.getDegree();
+                                double newCoefficient = monomial.getCoefficient() * monomial2.getCoefficient();
 
-        if (degree1 == degree2) {
-            for (int i = degree1; i > 0; i--) {
-                if (addCoefficients(p1, p2, i) != 0) {
-                    return i;
-                }
-            }
+                                if (newCoefficient == 0) {
+                                    return;
+                                }
 
-            return 0;
-        }
+                                int[] newDegrees = IntStream
+                                        .range(0, degrees.length)
+                                        .map(index -> degrees[index] + degrees2[index])
+                                        .toArray();
 
-        return Math.max(degree1, degree2);
-    }
+                                Monomial newMonomial = new Monomial(newCoefficient, newDegrees);
+                                Monomial currentMonomial = result.get(newMonomial);
+                                if (currentMonomial != null) {
+                                    double currentCoefficient = currentMonomial.getCoefficient();
+                                    newMonomial = new Monomial(currentCoefficient + newCoefficient, newDegrees);
+                                }
 
-    private double addCoefficients(Polynomial p1, Polynomial p2, int index) {
-        return p1.getCoefficient(index) + p2.getCoefficient(index);
+                                result.put(newMonomial, newMonomial);
+                            });
+                });
+
+        return new Polynomial(result);
     }
 }
