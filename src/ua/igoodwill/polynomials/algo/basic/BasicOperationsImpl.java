@@ -2,10 +2,10 @@ package ua.igoodwill.polynomials.algo.basic;
 
 import ua.igoodwill.polynomials.model.HasMonomials;
 import ua.igoodwill.polynomials.model.Monomial;
+import ua.igoodwill.polynomials.model.MonomialsContainer;
 import ua.igoodwill.polynomials.model.Polynomial;
 
 import java.util.Arrays;
-import java.util.TreeMap;
 import java.util.stream.IntStream;
 
 public class BasicOperationsImpl implements BasicOperations {
@@ -15,21 +15,11 @@ public class BasicOperationsImpl implements BasicOperations {
         Monomial[] monomials = p1.getMonomials();
         Monomial[] monomials2 = p2.getMonomials();
 
-        TreeMap<Monomial, Monomial> result = new TreeMap<>();
+        MonomialsContainer result = new MonomialsContainer();
         Arrays
                 .stream(new Monomial[][]{monomials, monomials2})
                 .flatMap(Arrays::stream)
-                .forEach(monomial -> {
-                    Monomial currentMonomial = result.get(monomial);
-                    if (currentMonomial != null) {
-                        int[] degrees = monomial.getDegrees();
-                        double coefficient = monomial.getCoefficient();
-                        double currentCoefficient = currentMonomial.getCoefficient();
-                        monomial = new Monomial(currentCoefficient + coefficient, degrees);
-                    }
-
-                    result.put(monomial, monomial);
-                });
+                .forEach(result::add);
 
         return new Polynomial(result);
     }
@@ -52,7 +42,7 @@ public class BasicOperationsImpl implements BasicOperations {
         Monomial[] monomials = p1.getMonomials();
         Monomial[] monomials2 = p2.getMonomials();
 
-        TreeMap<Monomial, Monomial> result = new TreeMap<>();
+        MonomialsContainer result = new MonomialsContainer();
         Arrays
                 .stream(monomials)
                 .forEach(monomial -> {
@@ -74,13 +64,7 @@ public class BasicOperationsImpl implements BasicOperations {
                                         .toArray();
 
                                 Monomial newMonomial = new Monomial(newCoefficient, newDegrees);
-                                Monomial currentMonomial = result.get(newMonomial);
-                                if (currentMonomial != null) {
-                                    double currentCoefficient = currentMonomial.getCoefficient();
-                                    newMonomial = new Monomial(currentCoefficient + newCoefficient, newDegrees);
-                                }
-
-                                result.put(newMonomial, newMonomial);
+                                result.add(newMonomial);
                             });
                 });
 
