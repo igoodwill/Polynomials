@@ -2,9 +2,10 @@ package ua.igoodwill.polynomials;
 
 import ua.igoodwill.polynomials.algo.basic.BasicOperations;
 import ua.igoodwill.polynomials.algo.basic.BasicOperationsImpl;
+import ua.igoodwill.polynomials.algo.buchberger.Buchberger;
+import ua.igoodwill.polynomials.algo.buchberger.BuchbergerImpl;
 import ua.igoodwill.polynomials.algo.division.Division;
 import ua.igoodwill.polynomials.algo.division.DivisionImpl;
-import ua.igoodwill.polynomials.algo.division.DivisionResult;
 import ua.igoodwill.polynomials.algo.monomial.lcm.MonomialLcm;
 import ua.igoodwill.polynomials.algo.monomial.lcm.MonomialLcmImpl;
 import ua.igoodwill.polynomials.algo.s_polynomial.SPolynomial;
@@ -28,7 +29,9 @@ import ua.igoodwill.polynomials.util.locale.MessageUtilImpl;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -43,6 +46,7 @@ public class Main {
     private Division division;
     private MonomialLcm monomialLcm;
     private SPolynomial sPolynomial;
+    private Buchberger buchberger;
 
     public static void main(String[] args) throws IOException {
         Main instance = new Main();
@@ -52,13 +56,17 @@ public class Main {
         String[] order = instance.orderReader.readOrder();
         NotationService.setVariableLetters(order);
 
-        instance.basicWriter.write("F: ");
-        Polynomial f = instance.polynomialsReader.readPolynomial();
         instance.basicWriter.writeLine("Generators (enter zero to divide): ");
         Polynomial[] generators = instance.generatorsReader.readGenerators();
 
-        DivisionResult divisionResult = instance.division.divide(f, generators);
-        instance.basicWriter.writeLine(divisionResult.toString());
+        Polynomial[] result = instance.buchberger.findGrobnerBasis(generators);
+        instance.basicWriter.writeLine("Gröbner bases:");
+        instance.basicWriter.writeLine(
+                Arrays
+                        .stream(result)
+                        .map(Polynomial::toString)
+                        .collect(Collectors.joining("\n"))
+        );
     }
 
     private void init() {
@@ -82,5 +90,6 @@ public class Main {
         division = new DivisionImpl(basicOperations);
         monomialLcm = new MonomialLcmImpl();
         sPolynomial = new SPolynomialImpl(basicOperations, division, monomialLcm);
+        buchberger = new BuchbergerImpl(division, sPolynomial);
     }
 }
