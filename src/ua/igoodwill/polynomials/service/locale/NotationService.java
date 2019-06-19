@@ -1,5 +1,7 @@
 package ua.igoodwill.polynomials.service.locale;
 
+import ua.igoodwill.polynomials.model.Order;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -8,6 +10,7 @@ public class NotationService {
 
     private static NotationService instance = new NotationService();
 
+    private Order order;
     private String[] variableLetters; // [x, y] means x > y order
     private Map<String, Integer> variableLetterToIndex;
     private String powerSymbol;
@@ -19,6 +22,14 @@ public class NotationService {
     }
 
     private NotationService() {
+    }
+
+    public static Order getOrder() {
+        return getInstance().order;
+    }
+
+    public static void setOrder(Order order) {
+        getInstance().order = order;
     }
 
     public static String[] getVariableLetters() {

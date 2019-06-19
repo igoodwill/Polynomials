@@ -20,6 +20,7 @@ import ua.igoodwill.polynomials.io.polynomials.generators.GeneratorsReader;
 import ua.igoodwill.polynomials.io.polynomials.generators.GeneratorsReaderImpl;
 import ua.igoodwill.polynomials.io.polynomials.order.OrderReader;
 import ua.igoodwill.polynomials.io.polynomials.order.OrderReaderImpl;
+import ua.igoodwill.polynomials.model.Order;
 import ua.igoodwill.polynomials.model.Polynomial;
 import ua.igoodwill.polynomials.service.locale.FormatService;
 import ua.igoodwill.polynomials.service.locale.MessageService;
@@ -52,15 +53,19 @@ public class Main {
         Main instance = new Main();
         instance.init();
 
-        instance.basicWriter.write("Order (\"x y z\" means x > y > z order): ");
-        String[] order = instance.orderReader.readOrder();
-        NotationService.setVariableLetters(order);
+        instance.basicWriter.write("Order (lex/grlex/grevlex): ");
+        Order order = instance.orderReader.readOrder();
+        NotationService.setOrder(order);
+
+        instance.basicWriter.write("Variables (\"x y z\" means x > y > z order): ");
+        String[] variables = instance.orderReader.readVariables();
+        NotationService.setVariableLetters(variables);
 
         instance.basicWriter.writeLine("Generators (enter zero to divide): ");
         Polynomial[] generators = instance.generatorsReader.readGenerators();
 
         Polynomial[] result = instance.buchberger.findGrobnerBasis(generators);
-        instance.basicWriter.writeLine("Gröbner bases:");
+        instance.basicWriter.writeLine("Reduced Gröbner basis:");
         instance.basicWriter.writeLine(
                 Arrays
                         .stream(result)

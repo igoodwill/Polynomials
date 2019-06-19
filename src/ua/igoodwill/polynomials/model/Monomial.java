@@ -193,10 +193,26 @@ public class Monomial implements HasMonomials, Comparable<Monomial> {
 
     @Override
     public int compareTo(Monomial other) {
+        Order order = NotationService.getOrder();
+        if (order != Order.LEX) {
+            int cmp = Integer.compare(getTotalDegree(), other.getTotalDegree());
+            if (cmp != 0) {
+                if (order == Order.GREVLEX) {
+                    cmp *= -1;
+                }
+
+                return cmp;
+            }
+        }
+
         return Arrays.compare(degrees, other.degrees);
     }
 
     public static Monomial zero() {
-        return new Monomial(0, new int[NotationService.getNumberOfVariables()]);
+        return constant(0);
+    }
+
+    public static Monomial constant(double coefficient) {
+        return new Monomial(coefficient, new int[NotationService.getNumberOfVariables()]);
     }
 }
