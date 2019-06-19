@@ -64,7 +64,7 @@ public class Main {
         instance.basicWriter.writeLine("Generators (enter zero to divide): ");
         Polynomial[] generators = instance.generatorsReader.readGenerators();
 
-        Polynomial[] result = instance.buchberger.findGrobnerBasis(generators);
+        Polynomial[] result = instance.buchberger.findReducedGrobnerBasis(generators);
         instance.basicWriter.writeLine("Reduced Gröbner basis:");
         instance.basicWriter.writeLine(
                 Arrays
