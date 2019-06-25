@@ -15,6 +15,7 @@ import static ua.igoodwill.polynomials.util.regex.RegexUtil.wrapWithAnchors;
 public class Monomial implements HasMonomials, Comparable<Monomial> {
 
     private static final String CONSTANT_PATTERN = "?\\d+(?:\\.\\d+)?";
+    private static final int PRECISION = 10_000;
 
     private final double coefficient;
     private final int[] degrees;
@@ -118,7 +119,7 @@ public class Monomial implements HasMonomials, Comparable<Monomial> {
 
     @Override
     public boolean isZero() {
-        return coefficient == 0;
+        return Math.round(coefficient * PRECISION) == 0;
     }
 
     public int getTotalDegree() {
