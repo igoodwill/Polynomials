@@ -29,14 +29,14 @@ public class DivisionImpl implements Division {
                 .range(0, divisors.length)
                 .mapToObj(index -> zero)
                 .toArray(Polynomial[]::new);
-        Polynomial remainder = new Polynomial(dividend);
+        Polynomial remainder = Polynomial.zero();
 
-        boolean stop = false;
-        while (!remainder.isZero() && !stop) {
-            int[] leadingRemainderMonomial = remainder.getLeadingMonomial().getDegrees();
-            double leadingRemainderCoefficient = remainder.getCoefficient(leadingRemainderMonomial);
+        while (!dividend.isZero()) {
+            Monomial leadingDividendMonomial = dividend.getLeadingMonomial();
+            int[] leadingDividendMonomialDegrees = leadingDividendMonomial.getDegrees();
+            double leadingDividendCoefficient = dividend.getCoefficient(leadingDividendMonomialDegrees);
 
-            stop = true;
+            boolean divisionOccurred = false;
             for (int i = 0; i < divisors.length; i++) {
                 HasMonomials divisor = divisors[i];
 
@@ -45,19 +45,24 @@ public class DivisionImpl implements Division {
 
                 int[] degrees = IntStream
                         .range(0, NotationService.getNumberOfVariables())
-                        .map(index -> leadingRemainderMonomial[index] - leadingDivisorMonomial[index])
+                        .map(index -> leadingDividendMonomialDegrees[index] - leadingDivisorMonomial[index])
                         .toArray();
 
                 if (Arrays.stream(degrees).noneMatch(degree -> degree < 0)) {
                     Monomial tmp =
-                            new Monomial(leadingRemainderCoefficient / leadingDivisorCoefficient, degrees);
+                            new Monomial(leadingDividendCoefficient / leadingDivisorCoefficient, degrees);
 
                     quotients[i] = basicOperations.add(quotients[i], tmp);
-                    remainder = basicOperations.subtract(remainder, basicOperations.multiply(divisor, tmp));
+                    dividend = basicOperations.subtract(dividend, basicOperations.multiply(divisor, tmp));
 
-                    stop = false;
+                    divisionOccurred = true;
                     break;
                 }
+            }
+
+            if (!divisionOccurred) {
+                remainder = basicOperations.add(remainder, leadingDividendMonomial);
+                dividend = basicOperations.subtract(dividend, leadingDividendMonomial);
             }
         }
 
