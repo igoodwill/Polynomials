@@ -203,7 +203,12 @@ public class Monomial implements HasMonomials, Comparable<Monomial> {
             }
         }
 
-        return Arrays.compare(degrees, other.degrees);
+        cmp = Arrays.compare(degrees, other.degrees);
+        if (order == Order.GREVLEX) {
+            cmp *= -1;
+        }
+
+        return cmp;
     }
 
     public static Monomial zero() {
