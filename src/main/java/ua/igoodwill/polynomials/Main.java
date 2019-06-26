@@ -53,7 +53,7 @@ public class Main {
         Main instance = new Main();
         instance.init();
 
-        instance.basicWriter.write("Order (lex/grlex/grevlex): ");
+        instance.basicWriter.write("Order (lex/invlex/grlex/grevlex): ");
         Order order = instance.orderReader.readOrder();
         NotationService.setOrder(order);
 

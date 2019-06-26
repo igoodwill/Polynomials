@@ -50,7 +50,7 @@ public class NotationService {
 
     public static void setVariableLetters(String... variableLetters) {
         int length = variableLetters.length;
-        if (getOrder() == Order.GREVLEX) {
+        if (getOrder().isInverted()) {
             for (int i = 0; i < length / 2; i++) {
                 String temp = variableLetters[i];
                 variableLetters[i] = variableLetters[length - i - 1];

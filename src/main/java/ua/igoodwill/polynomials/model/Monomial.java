@@ -196,7 +196,7 @@ public class Monomial implements HasMonomials, Comparable<Monomial> {
     public int compareTo(Monomial other) {
         Order order = NotationService.getOrder();
         int cmp;
-        if (order != Order.LEX) {
+        if (order.isGraded()) {
             cmp = Integer.compare(getTotalDegree(), other.getTotalDegree());
             if (cmp != 0) {
                 return cmp;
