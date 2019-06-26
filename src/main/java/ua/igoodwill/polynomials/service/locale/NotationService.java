@@ -49,13 +49,22 @@ public class NotationService {
     }
 
     public static void setVariableLetters(String... variableLetters) {
+        int length = variableLetters.length;
+        if (getOrder() == Order.GREVLEX) {
+            for (int i = 0; i < length / 2; i++) {
+                String temp = variableLetters[i];
+                variableLetters[i] = variableLetters[length - i - 1];
+                variableLetters[length - i - 1] = temp;
+            }
+        }
+
         NotationService instance = getInstance();
 
         instance.variableLetters = variableLetters;
         instance.variableLetterToIndex = new HashMap<>();
 
         IntStream
-                .range(0, variableLetters.length)
+                .range(0, length)
                 .forEach(index -> instance.variableLetterToIndex.put(variableLetters[index], index));
     }
 

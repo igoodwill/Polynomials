@@ -195,13 +195,10 @@ public class Monomial implements HasMonomials, Comparable<Monomial> {
     @Override
     public int compareTo(Monomial other) {
         Order order = NotationService.getOrder();
+        int cmp;
         if (order != Order.LEX) {
-            int cmp = Integer.compare(getTotalDegree(), other.getTotalDegree());
+            cmp = Integer.compare(getTotalDegree(), other.getTotalDegree());
             if (cmp != 0) {
-                if (order == Order.GREVLEX) {
-                    cmp *= -1;
-                }
-
                 return cmp;
             }
         }
